@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, RotateCcw, Hash } from "lucide-react";
+import { PaywallModal } from "@/components/ui/paywall-modal";
+import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 // ─── Numerology helpers ──────────────────────────────────────────────────────
 
@@ -165,11 +167,9 @@ export default function NumerologyPage() {
   const [interpretation, setInterpretation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !birthDate) return;
-
+  const doCalculate = async () => {
     const lp = calculateLifePath(birthDate);
     const dn = calculateDestiny(name);
     const sn = calculateSoul(name);
@@ -205,6 +205,17 @@ export default function NumerologyPage() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !birthDate) return;
+    if (!canUseModule("numerology")) {
+      setShowPaywall(true);
+      return;
+    }
+    markModuleUsed("numerology");
+    await doCalculate();
+  };
+
   const handleReset = () => {
     setPhase("input");
     setName("");
@@ -219,6 +230,16 @@ export default function NumerologyPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-[#0a0a0f] overflow-hidden">
+      <PaywallModal
+        isOpen={showPaywall}
+        moduleName="Нумерологию"
+        onClose={() => setShowPaywall(false)}
+        onSubscribed={() => {
+          setShowPaywall(false);
+          markModuleUsed("numerology");
+          doCalculate();
+        }}
+      />
       <StarField />
       <div className="fixed top-[-200px] left-[-200px] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />

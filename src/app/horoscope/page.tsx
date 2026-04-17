@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, RotateCcw, Sparkles } from "lucide-react";
+import { PaywallModal } from "@/components/ui/paywall-modal";
+import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 // ─── Zodiac data ──────────────────────────────────────────────────────────────
 
@@ -66,12 +68,14 @@ export default function HoroscopePage() {
   const [horoscope, setHoroscope] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [pendingSign, setPendingSign] = useState<Sign | null>(null);
 
   const today = new Date().toLocaleDateString("ru-RU", {
     day: "numeric", month: "long", year: "numeric",
   });
 
-  const handleSelect = async (sign: Sign) => {
+  const doFetchHoroscope = async (sign: Sign) => {
     setSelected(sign);
     setPhase("reading");
     setIsLoading(true);
@@ -102,6 +106,16 @@ export default function HoroscopePage() {
     }
   };
 
+  const handleSelect = (sign: Sign) => {
+    if (!canUseModule("horoscope")) {
+      setPendingSign(sign);
+      setShowPaywall(true);
+      return;
+    }
+    markModuleUsed("horoscope");
+    doFetchHoroscope(sign);
+  };
+
   const handleReset = () => {
     setPhase("select");
     setSelected(null);
@@ -111,6 +125,19 @@ export default function HoroscopePage() {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-[#0a0a0f] overflow-hidden">
+      <PaywallModal
+        isOpen={showPaywall}
+        moduleName="Гороскоп"
+        onClose={() => setShowPaywall(false)}
+        onSubscribed={() => {
+          setShowPaywall(false);
+          if (pendingSign) {
+            markModuleUsed("horoscope");
+            doFetchHoroscope(pendingSign);
+            setPendingSign(null);
+          }
+        }}
+      />
       <StarField />
       <div className="fixed top-[-200px] left-[-200px] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />

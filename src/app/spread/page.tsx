@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, RotateCcw } from "lucide-react";
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import { PaywallModal } from "@/components/ui/paywall-modal";
 import { tarotCards, TarotCard } from "@/data/tarot-cards";
+import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 type Phase = "question" | "cards" | "reading";
 type SpreadType = "single" | "triple";
@@ -100,20 +102,32 @@ export default function SpreadPage() {
   const [readings, setReadings] = useState<string[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [pendingQuestion, setPendingQuestion] = useState("");
 
   // ── Question submit ────────────────────────────────────────────────────────
+  const doStartSpread = useCallback((message: string) => {
+    setQuestion(message);
+    const shuffled = [...tarotCards].sort(() => Math.random() - 0.5);
+    setShuffledCards(shuffled);
+    setPhase("cards");
+  }, []);
+
   const handleSendQuestion = useCallback(
     (message: string) => {
       const cleanMessage = message
         .replace(/^\[(Search|Think|Canvas): /, "")
         .replace(/\]$/, "");
       if (!cleanMessage.trim()) return;
-      setQuestion(cleanMessage);
-      const shuffled = [...tarotCards].sort(() => Math.random() - 0.5);
-      setShuffledCards(shuffled);
-      setPhase("cards");
+      if (!canUseModule("spread")) {
+        setPendingQuestion(cleanMessage);
+        setShowPaywall(true);
+        return;
+      }
+      markModuleUsed("spread");
+      doStartSpread(cleanMessage);
     },
-    []
+    [doStartSpread]
   );
 
   // ── Card selection ─────────────────────────────────────────────────────────
@@ -224,6 +238,16 @@ export default function SpreadPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-[#0a0a0f] overflow-hidden">
+      <PaywallModal
+        isOpen={showPaywall}
+        moduleName="Таро"
+        onClose={() => setShowPaywall(false)}
+        onSubscribed={() => {
+          setShowPaywall(false);
+          markModuleUsed("spread");
+          doStartSpread(pendingQuestion);
+        }}
+      />
       <StarField />
       <div className="fixed top-[-200px] left-[-200px] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />

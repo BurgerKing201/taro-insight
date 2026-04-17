@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Heart, RotateCcw, Sparkles } from "lucide-react";
+import { PaywallModal } from "@/components/ui/paywall-modal";
+import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 // ─── Numerology helpers ──────────────────────────────────────────────────────
 
@@ -210,11 +212,9 @@ export default function CompatibilityPage() {
   const [interpretation, setInterpretation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPaywall, setShowPaywall] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!p1.name.trim() || !p1.birthDate || !p2.name.trim() || !p2.birthDate) return;
-
+  const doCalculate = async () => {
     const a = { lp: calculateLifePath(p1.birthDate), dn: calcDestiny(p1.name), sn: calcSoul(p1.name) };
     const b = { lp: calculateLifePath(p2.birthDate), dn: calcDestiny(p2.name), sn: calcSoul(p2.name) };
     const total = calcCompatibility(a.lp, b.lp, a.dn, b.dn, a.sn, b.sn);
@@ -250,6 +250,17 @@ export default function CompatibilityPage() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!p1.name.trim() || !p1.birthDate || !p2.name.trim() || !p2.birthDate) return;
+    if (!canUseModule("compatibility")) {
+      setShowPaywall(true);
+      return;
+    }
+    markModuleUsed("compatibility");
+    await doCalculate();
+  };
+
   const handleReset = () => {
     setPhase("input");
     setP1({ name: "", birthDate: "" });
@@ -259,6 +270,16 @@ export default function CompatibilityPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-[#0a0a0f] overflow-hidden">
+      <PaywallModal
+        isOpen={showPaywall}
+        moduleName="Совместимость"
+        onClose={() => setShowPaywall(false)}
+        onSubscribed={() => {
+          setShowPaywall(false);
+          markModuleUsed("compatibility");
+          doCalculate();
+        }}
+      />
       <StarField />
       <div className="fixed top-[-200px] left-[-200px] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />
