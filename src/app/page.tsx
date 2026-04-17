@@ -110,9 +110,10 @@ export default function Home() {
           />
           <ServiceCard
             icon={<Sun className="w-8 h-8" />}
-            title="Гороскопы"
-            description="Ежедневные, еженедельные и месячные гороскопы для вашего знака зодиака."
+            title="Гороскоп"
+            description="Персональный прогноз на сегодня для вашего знака зодиака от звёздного ИИ."
             delay={0.3}
+            href="/horoscope"
           />
         </motion.div>
       </main>
