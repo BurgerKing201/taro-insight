@@ -400,7 +400,7 @@ export default function SpreadPage() {
 
               {/* ── Card Deck ── */}
               <div
-                className="relative w-full max-w-4xl mx-auto flex items-center justify-center overflow-hidden"
+                className="relative w-full max-w-4xl mx-auto flex items-center justify-center"
                 style={{ height: `${card.containerH}px` }}
               >
                 <div
