@@ -116,7 +116,7 @@ export default function HoroscopePage() {
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-8 py-6">
+      <header className="relative z-10 flex items-center justify-between px-4 md:px-8 py-5">
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
@@ -126,7 +126,9 @@ export default function HoroscopePage() {
         </button>
         <div className="flex items-center gap-2">
           <Star className="w-5 h-5 text-purple-400" />
-          <span className="text-sm font-medium text-gray-300">Гороскоп · {today}</span>
+          <span className="text-sm font-medium text-gray-300">
+            Гороскоп<span className="hidden sm:inline"> · {today}</span>
+          </span>
         </div>
         {phase === "reading" ? (
           <button
@@ -134,9 +136,9 @@ export default function HoroscopePage() {
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
-            <span className="text-sm">Сменить знак</span>
+            <span className="text-sm hidden sm:inline">Сменить знак</span>
           </button>
-        ) : <div className="w-24" />}
+        ) : <div className="w-8 md:w-24" />}
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-12">
@@ -153,10 +155,10 @@ export default function HoroscopePage() {
               className="w-full max-w-3xl"
             >
               <div className="text-center mb-10 mt-2">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent">
                   Гороскоп
                 </h1>
-                <p className="text-gray-400 max-w-md mx-auto">
+                <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto">
                   Выберите ваш знак зодиака, чтобы получить персональный прогноз на сегодня.
                 </p>
               </div>
@@ -171,11 +173,11 @@ export default function HoroscopePage() {
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => handleSelect(sign)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-2xl border bg-gradient-to-br ${sign.color} ${sign.border} hover:brightness-125 transition-all duration-200 cursor-pointer`}
+                    className={`flex flex-col items-center gap-1 p-3 md:p-4 rounded-2xl border bg-gradient-to-br ${sign.color} ${sign.border} hover:brightness-125 transition-all duration-200 cursor-pointer`}
                   >
-                    <span className="text-3xl">{sign.symbol}</span>
-                    <span className="text-white text-xs font-semibold">{sign.nameRu}</span>
-                    <span className="text-gray-400 text-[10px]">{sign.dates}</span>
+                    <span className="text-2xl md:text-3xl">{sign.symbol}</span>
+                    <span className="text-white text-[11px] md:text-xs font-semibold text-center leading-tight">{sign.nameRu}</span>
+                    <span className="text-gray-400 text-[9px] md:text-[10px] hidden sm:block">{sign.dates}</span>
                   </motion.button>
                 ))}
               </div>

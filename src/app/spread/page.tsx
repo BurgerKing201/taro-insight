@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, RotateCcw } from "lucide-react";
@@ -11,6 +11,20 @@ type Phase = "question" | "cards" | "reading";
 type SpreadType = "single" | "triple";
 
 const POSITIONS = ["Прошлое", "Настоящее", "Будущее"];
+
+// ─── Responsive card sizes ───────────────────────────────────────────────────
+function useCardSizes() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile
+    ? { w: 72, h: 112, ml: 36, step: 20, containerH: 220, innerH: 185, maxW: 500 }
+    : { w: 117, h: 182, ml: 59, step: 36, containerH: 364, innerH: 312, maxW: 910 };
+}
 
 // ─── Star field background ──────────────────────────────────────────────────
 function StarField() {
@@ -69,6 +83,7 @@ function CardFront({ card }: { card: TarotCard }) {
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function SpreadPage() {
   const router = useRouter();
+  const card = useCardSizes();
   const [phase, setPhase] = useState<Phase>("question");
   const [question, setQuestion] = useState("");
   const [spreadType, setSpreadType] = useState<SpreadType>("single");
@@ -214,7 +229,7 @@ export default function SpreadPage() {
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ── Header ── */}
-      <header className="relative z-10 flex items-center justify-between px-8 py-6">
+      <header className="relative z-10 flex items-center justify-between px-4 md:px-8 py-5">
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
@@ -251,9 +266,9 @@ export default function SpreadPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl"
+              className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl px-2"
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-5xl font-bold mb-4 text-center bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent">
                 Задайте ваш вопрос
               </h1>
               <p className="text-gray-400 text-center mb-6 max-w-lg">
@@ -361,20 +376,20 @@ export default function SpreadPage() {
 
               {/* ── Card Deck ── */}
               <div
-                className="relative w-full max-w-4xl mx-auto flex items-center justify-center"
-                style={{ height: "364px" }}
+                className="relative w-full max-w-4xl mx-auto flex items-center justify-center overflow-hidden"
+                style={{ height: `${card.containerH}px` }}
               >
                 <div
                   className="relative"
                   style={{
-                    width: `${Math.min(shuffledCards.length * 36 + 130, 910)}px`,
-                    height: "312px",
+                    width: `${Math.min(shuffledCards.length * card.step + card.ml * 2, card.maxW)}px`,
+                    height: `${card.innerH}px`,
                   }}
                 >
                   {shuffledCards.map((card, index) => {
                     const totalCards = shuffledCards.length;
                     const centerOffset = (totalCards - 1) / 2;
-                    const xOffset = (index - centerOffset) * 36;
+                    const xOffset = (index - centerOffset) * card.step;
 
                     // Single mode state
                     const isSingleSelected = spreadType === "single" && selectedCardIndex === index;
@@ -420,7 +435,7 @@ export default function SpreadPage() {
                         initial={{ x: xOffset, y: 100, opacity: 0, rotate: 0 }}
                         animate={animateProps}
                         transition={{ duration: 0.5, delay: index * 0.02 }}
-                        className={`absolute left-1/2 top-0 -ml-[59px] w-[117px] h-[182px] perspective-[800px] ${
+                        className={`absolute left-1/2 top-0 perspective-[800px] ${
                           isDisabled ? "pointer-events-none" : "cursor-pointer"
                         } ${isSelected ? "card-flipped" : ""}`}
                         onClick={() => !isDisabled && handleSelectCard(index)}
@@ -434,7 +449,12 @@ export default function SpreadPage() {
                               }
                             : undefined
                         }
-                        style={{ zIndex: isSelected ? 50 : index }}
+                        style={{
+                          zIndex: isSelected ? 50 : index,
+                          marginLeft: `-${card.ml}px`,
+                          width: `${card.w}px`,
+                          height: `${card.h}px`,
+                        }}
                       >
                         <div className="card-inner relative w-full h-full">
                           <div className="card-back">
@@ -469,13 +489,13 @@ export default function SpreadPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="flex-1 flex flex-col items-center w-full max-w-3xl pt-8"
+              className="flex-1 flex flex-col items-center w-full max-w-3xl pt-6 px-2"
             >
 
               {/* ── Single card display ── */}
               {spreadType === "single" && selectedCard && (
                 <div className="flex flex-col items-center mb-8">
-                  <div className="w-[156px] h-[241px] mb-4 animate-float">
+                  <div className="w-[120px] h-[185px] sm:w-[156px] sm:h-[241px] mb-4 animate-float">
                     <CardFront card={selectedCard} />
                   </div>
                   <h2 className="text-3xl font-bold text-white mb-1">
@@ -487,13 +507,13 @@ export default function SpreadPage() {
 
               {/* ── Triple cards display ── */}
               {spreadType === "triple" && selectedCards.length === 3 && (
-                <div className="flex justify-center gap-4 mb-8 w-full">
+                <div className="flex justify-center gap-2 sm:gap-4 mb-8 w-full">
                   {selectedCards.map((card, i) => (
-                    <div key={card.id} className="flex flex-col items-center gap-2 flex-1 max-w-[143px]">
+                    <div key={card.id} className="flex flex-col items-center gap-2 flex-1 max-w-[110px] sm:max-w-[143px]">
                       <p className="text-purple-400 text-[10px] font-semibold tracking-widest uppercase">
                         {POSITIONS[i]}
                       </p>
-                      <div className="w-full h-[169px] animate-float" style={{ animationDelay: `${i * 0.4}s` }}>
+                      <div className="w-full h-[130px] sm:h-[169px] animate-float" style={{ animationDelay: `${i * 0.4}s` }}>
                         <CardFront card={card} />
                       </div>
                       <p className="text-white text-xs font-medium text-center leading-tight">

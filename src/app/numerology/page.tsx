@@ -224,7 +224,7 @@ export default function NumerologyPage() {
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ── Header ── */}
-      <header className="relative z-10 flex items-center justify-between px-8 py-6">
+      <header className="relative z-10 flex items-center justify-between px-4 md:px-8 py-5">
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
@@ -271,10 +271,10 @@ export default function NumerologyPage() {
                 <Hash className="w-8 h-8 text-purple-400" />
               </motion.div>
 
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-5xl font-bold mb-4 text-center bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent">
                 Нумерология
               </h1>
-              <p className="text-gray-400 text-center mb-8 max-w-md">
+              <p className="text-gray-400 text-sm md:text-base text-center mb-8 max-w-md">
                 Раскройте тайный смысл чисел в вашей жизни. Введите ваше полное имя и дату рождения.
               </p>
 
@@ -306,7 +306,7 @@ export default function NumerologyPage() {
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full mt-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold text-lg tracking-wide transition-all duration-300 hover:from-purple-500 hover:to-purple-400 glow-purple cursor-pointer flex items-center justify-center gap-3"
+                  className="w-full mt-2 px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold text-base md:text-lg tracking-wide transition-all duration-300 hover:from-purple-500 hover:to-purple-400 glow-purple cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-5 h-5" />
                   Раскрыть числа судьбы
