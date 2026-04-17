@@ -85,7 +85,7 @@ function CardFront({ card }: { card: TarotCard }) {
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function SpreadPage() {
   const router = useRouter();
-  const card = useCardSizes();
+  const sizes = useCardSizes();
   const [phase, setPhase] = useState<Phase>("question");
   const [question, setQuestion] = useState("");
   const [spreadType, setSpreadType] = useState<SpreadType>("single");
@@ -401,19 +401,19 @@ export default function SpreadPage() {
               {/* ── Card Deck ── */}
               <div
                 className="relative w-full max-w-4xl mx-auto flex items-center justify-center"
-                style={{ height: `${card.containerH}px` }}
+                style={{ height: `${sizes.containerH}px` }}
               >
                 <div
                   className="relative"
                   style={{
-                    width: `${Math.min(shuffledCards.length * card.step + card.ml * 2, card.maxW)}px`,
-                    height: `${card.innerH}px`,
+                    width: `${Math.min(shuffledCards.length * sizes.step + sizes.ml * 2, sizes.maxW)}px`,
+                    height: `${sizes.innerH}px`,
                   }}
                 >
                   {shuffledCards.map((card, index) => {
                     const totalCards = shuffledCards.length;
                     const centerOffset = (totalCards - 1) / 2;
-                    const xOffset = (index - centerOffset) * card.step;
+                    const xOffset = (index - centerOffset) * sizes.step;
 
                     // Single mode state
                     const isSingleSelected = spreadType === "single" && selectedCardIndex === index;
@@ -475,9 +475,9 @@ export default function SpreadPage() {
                         }
                         style={{
                           zIndex: isSelected ? 50 : index,
-                          marginLeft: `-${card.ml}px`,
-                          width: `${card.w}px`,
-                          height: `${card.h}px`,
+                          marginLeft: `-${sizes.ml}px`,
+                          width: `${sizes.w}px`,
+                          height: `${sizes.h}px`,
                         }}
                       >
                         <div className="card-inner relative w-full h-full">
