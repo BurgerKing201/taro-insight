@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, RotateCcw, Sparkles } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
+import { AuthButton } from "@/components/ui/auth-button";
 import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 // ─── Zodiac data ──────────────────────────────────────────────────────────────
@@ -106,13 +107,13 @@ export default function HoroscopePage() {
     }
   };
 
-  const handleSelect = (sign: Sign) => {
-    if (!canUseModule("horoscope")) {
+  const handleSelect = async (sign: Sign) => {
+    if (!(await canUseModule("horoscope"))) {
       setPendingSign(sign);
       setShowPaywall(true);
       return;
     }
-    markModuleUsed("horoscope");
+    await markModuleUsed("horoscope");
     doFetchHoroscope(sign);
   };
 
@@ -129,10 +130,10 @@ export default function HoroscopePage() {
         isOpen={showPaywall}
         moduleName="Гороскоп"
         onClose={() => setShowPaywall(false)}
-        onSubscribed={() => {
+        onSubscribed={async () => {
           setShowPaywall(false);
           if (pendingSign) {
-            markModuleUsed("horoscope");
+            await markModuleUsed("horoscope");
             doFetchHoroscope(pendingSign);
             setPendingSign(null);
           }
@@ -157,15 +158,18 @@ export default function HoroscopePage() {
             Гороскоп<span className="hidden sm:inline"> · {today}</span>
           </span>
         </div>
-        {phase === "reading" ? (
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span className="text-sm hidden sm:inline">Сменить знак</span>
-          </button>
-        ) : <div className="w-8 md:w-24" />}
+        <div className="flex items-center gap-2">
+          {phase === "reading" && (
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span className="text-sm hidden sm:inline">Сменить знак</span>
+            </button>
+          )}
+          <AuthButton />
+        </div>
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-12">

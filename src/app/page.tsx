@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Sparkles, Moon, Star, Sun } from "lucide-react";
 import { motion } from "framer-motion";
+import { AuthButton } from "@/components/ui/auth-button";
 
 function StarField() {
   return (
@@ -40,6 +41,7 @@ export default function Home() {
           <Sparkles className="w-5 h-5 text-purple-400" />
           <span className="text-base font-semibold tracking-wide text-white">Astral Insight</span>
         </div>
+        <AuthButton />
       </header>
 
       {/* Hero */}

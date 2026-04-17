@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, RotateCcw } from "lucide-react";
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { PaywallModal } from "@/components/ui/paywall-modal";
+import { AuthButton } from "@/components/ui/auth-button";
 import { tarotCards, TarotCard } from "@/data/tarot-cards";
 import { canUseModule, markModuleUsed } from "@/lib/usage";
 
@@ -265,16 +266,18 @@ export default function SpreadPage() {
           <Sparkles className="w-5 h-5 text-purple-400" />
           <span className="text-sm font-medium text-gray-300">{headerLabel}</span>
         </div>
-        {phase !== "question" && (
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span className="text-sm">Заново</span>
-          </button>
-        )}
-        {phase === "question" && <div className="w-16" />}
+        <div className="flex items-center gap-2">
+          {phase !== "question" && (
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span className="text-sm">Заново</span>
+            </button>
+          )}
+          <AuthButton />
+        </div>
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-8">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, RotateCcw, Hash } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
+import { AuthButton } from "@/components/ui/auth-button";
 import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 // ─── Numerology helpers ──────────────────────────────────────────────────────
@@ -208,11 +209,11 @@ export default function NumerologyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !birthDate) return;
-    if (!canUseModule("numerology")) {
+    if (!(await canUseModule("numerology"))) {
       setShowPaywall(true);
       return;
     }
-    markModuleUsed("numerology");
+    await markModuleUsed("numerology");
     await doCalculate();
   };
 
@@ -234,9 +235,9 @@ export default function NumerologyPage() {
         isOpen={showPaywall}
         moduleName="Нумерологию"
         onClose={() => setShowPaywall(false)}
-        onSubscribed={() => {
+        onSubscribed={async () => {
           setShowPaywall(false);
-          markModuleUsed("numerology");
+          await markModuleUsed("numerology");
           doCalculate();
         }}
       />
@@ -257,17 +258,18 @@ export default function NumerologyPage() {
           <Hash className="w-5 h-5 text-purple-400" />
           <span className="text-sm font-medium text-gray-300">Нумерология</span>
         </div>
-        {phase === "result" ? (
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span className="text-sm">Заново</span>
-          </button>
-        ) : (
-          <div className="w-16" />
-        )}
+        <div className="flex items-center gap-2">
+          {phase === "result" && (
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span className="text-sm">Заново</span>
+            </button>
+          )}
+          <AuthButton />
+        </div>
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-12">

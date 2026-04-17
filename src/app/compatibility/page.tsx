@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Heart, RotateCcw, Sparkles } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
+import { AuthButton } from "@/components/ui/auth-button";
 import { canUseModule, markModuleUsed } from "@/lib/usage";
 
 // ─── Numerology helpers ──────────────────────────────────────────────────────
@@ -253,11 +254,11 @@ export default function CompatibilityPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!p1.name.trim() || !p1.birthDate || !p2.name.trim() || !p2.birthDate) return;
-    if (!canUseModule("compatibility")) {
+    if (!(await canUseModule("compatibility"))) {
       setShowPaywall(true);
       return;
     }
-    markModuleUsed("compatibility");
+    await markModuleUsed("compatibility");
     await doCalculate();
   };
 
@@ -274,9 +275,9 @@ export default function CompatibilityPage() {
         isOpen={showPaywall}
         moduleName="Совместимость"
         onClose={() => setShowPaywall(false)}
-        onSubscribed={() => {
+        onSubscribed={async () => {
           setShowPaywall(false);
-          markModuleUsed("compatibility");
+          await markModuleUsed("compatibility");
           doCalculate();
         }}
       />
@@ -294,12 +295,15 @@ export default function CompatibilityPage() {
           <Heart className="w-5 h-5 text-purple-400" />
           <span className="text-sm font-medium text-gray-300">Совместимость</span>
         </div>
-        {phase === "result" ? (
-          <button onClick={handleReset} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer">
-            <RotateCcw className="w-4 h-4" />
-            <span className="text-sm">Заново</span>
-          </button>
-        ) : <div className="w-16" />}
+        <div className="flex items-center gap-2">
+          {phase === "result" && (
+            <button onClick={handleReset} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer">
+              <RotateCcw className="w-4 h-4" />
+              <span className="text-sm">Заново</span>
+            </button>
+          )}
+          <AuthButton />
+        </div>
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-12">

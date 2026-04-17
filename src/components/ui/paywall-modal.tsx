@@ -47,7 +47,7 @@ export function PaywallModal({ isOpen, moduleName, onClose, onSubscribed }: Payw
     setLoading(true);
     // Simulated payment delay
     await new Promise((r) => setTimeout(r, 1200));
-    subscribe();
+    await subscribe(selected);
     setLoading(false);
     setSuccess(true);
     await new Promise((r) => setTimeout(r, 900));
