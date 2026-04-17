@@ -103,9 +103,10 @@ export default function Home() {
           />
           <ServiceCard
             icon={<Star className="w-8 h-8" />}
-            title="Астрология"
-            description="Персональные астрологические прогнозы на основе вашей натальной карты."
+            title="Совместимость"
+            description="Узнайте нумерологическую совместимость двух людей по именам и датам рождения."
             delay={0.2}
+            href="/compatibility"
           />
           <ServiceCard
             icon={<Sun className="w-8 h-8" />}
