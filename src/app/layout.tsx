@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Astral Insight — Таро, Нумерология, Астрология",
+  title: "Taro Insight — Таро, Нумерология, Астрология",
   description: "Персональные гадания на Таро с помощью AI. Дневной расклад, нумерология, астрология и гороскопы.",
 };
 

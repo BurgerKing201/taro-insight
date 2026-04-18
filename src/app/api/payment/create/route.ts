@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
 
 const PLANS = {
-  monthly: { amount: "299.00", description: "Подписка Astral Insight — Месячная" },
-  annual:  { amount: "1990.00", description: "Подписка Astral Insight — Годовая" },
+  monthly: { amount: "299.00", description: "Подписка Taro Insight — Месячная" },
+  annual:  { amount: "1990.00", description: "Подписка Taro Insight — Годовая" },
 } as const;
 
 export async function POST(req: NextRequest) {

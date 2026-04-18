@@ -81,7 +81,7 @@ export default function LoginPage() {
               <Sparkles className="w-7 h-7 text-purple-400" />
             </div>
             <h1 className="text-2xl font-bold text-white">Добро пожаловать</h1>
-            <p className="text-gray-400 text-sm mt-1">Войдите в Astral Insight</p>
+            <p className="text-gray-400 text-sm mt-1">Войдите в Taro Insight</p>
           </div>
 
           {/* Google */}

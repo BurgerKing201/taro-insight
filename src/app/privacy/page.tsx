@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-white font-semibold text-base mb-3">1. Общие положения</h2>
             <p>
-              Настоящая Политика конфиденциальности описывает, как сервис <strong className="text-white">Astral Insight</strong> собирает,
+              Настоящая Политика конфиденциальности описывает, как сервис <strong className="text-white">Taro Insight</strong> собирает,
               использует и защищает информацию, которую вы предоставляете при использовании нашего сайта и приложения.
               Используя сервис, вы соглашаетесь с условиями данной политики.
             </p>
@@ -105,8 +105,8 @@ export default function PrivacyPage() {
             <h2 className="text-white font-semibold text-base mb-3">9. Контакты</h2>
             <p className="text-gray-400">
               По вопросам, связанным с конфиденциальностью данных, пишите на:{" "}
-              <a href="mailto:support@astral-insight.ru" className="text-purple-400 hover:text-purple-300 transition-colors">
-                support@astral-insight.ru
+              <a href="mailto:support@taro-insight.ru" className="text-purple-400 hover:text-purple-300 transition-colors">
+                support@taro-insight.ru
               </a>
             </p>
           </section>
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/5 text-center text-gray-600 text-xs">
-          © 2026 Astral Insight. Все права защищены.
+          © 2026 Taro Insight. Все права защищены.
         </div>
       </div>
     </div>

@@ -77,7 +77,7 @@ export default function PaymentSuccessPage() {
             {PLAN_LABELS[plan] ?? "Подписка"} успешно оформлена.
           </p>
           <p className="text-gray-500 text-sm mb-8">
-            Теперь у вас безлимитный доступ ко всем модулям Astral Insight.
+            Теперь у вас безлимитный доступ ко всем модулям Taro Insight.
           </p>
 
           <div className="flex flex-col gap-3">

@@ -39,7 +39,7 @@ export default function Home() {
       <header className="relative z-10 flex items-center justify-between px-4 md:px-8 py-5">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-purple-400" />
-          <span className="text-base font-semibold tracking-wide text-white">Astral Insight</span>
+          <span className="text-base font-semibold tracking-wide text-white">Taro Insight</span>
         </div>
         <AuthButton />
       </header>
@@ -52,7 +52,7 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-purple-300 via-white to-purple-300 bg-clip-text text-transparent"
         >
-          Astral Insight
+          Taro Insight
         </motion.h1>
 
         <motion.p
@@ -120,7 +120,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="relative z-10 py-6 text-center text-gray-600 text-sm flex items-center justify-center gap-4">
-        <span>Astral Insight &copy; {new Date().getFullYear()}</span>
+        <span>Taro Insight &copy; {new Date().getFullYear()}</span>
         <a href="/privacy" className="hover:text-gray-400 transition-colors">Политика конфиденциальности</a>
       </footer>
     </div>
