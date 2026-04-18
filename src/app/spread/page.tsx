@@ -83,6 +83,36 @@ function CardFront({ card }: { card: TarotCard }) {
   );
 }
 
+// ─── Seeded shuffle ───────────────────────────────────────────────────────────
+// Mulberry32 PRNG — deterministic given a numeric seed
+function mulberry32(seed: number) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function hashStr(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function seededShuffle<T>(arr: T[], seed: string): T[] {
+  const rng = mulberry32(hashStr(seed));
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function SpreadPage() {
   const router = useRouter();
@@ -91,6 +121,7 @@ export default function SpreadPage() {
   const [question, setQuestion] = useState("");
   const [spreadType, setSpreadType] = useState<SpreadType>("single");
   const [shuffledCards, setShuffledCards] = useState<TarotCard[]>([]);
+  const [dailySeed, setDailySeed] = useState("");
 
   // Single mode
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
@@ -106,13 +137,32 @@ export default function SpreadPage() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState("");
 
+  // ── Build daily seed on mount ──────────────────────────────────────────────
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    import("@/lib/supabase/client").then(({ createClient }) => {
+      createClient().auth.getUser().then(({ data: { user } }) => {
+        // seed = date + user identifier (id for logged-in, guest-{localStorage id} for guests)
+        let identifier = "guest";
+        if (user) {
+          identifier = user.id;
+        } else if (typeof window !== "undefined") {
+          let gid = localStorage.getItem("astral_guest_id");
+          if (!gid) { gid = Math.random().toString(36).slice(2); localStorage.setItem("astral_guest_id", gid); }
+          identifier = gid;
+        }
+        setDailySeed(`${today}:${identifier}`);
+      });
+    });
+  }, []);
+
   // ── Question submit ────────────────────────────────────────────────────────
   const doStartSpread = useCallback((message: string) => {
     setQuestion(message);
-    const shuffled = [...tarotCards].sort(() => Math.random() - 0.5);
+    const shuffled = seededShuffle(tarotCards, dailySeed || new Date().toISOString().split("T")[0]);
     setShuffledCards(shuffled);
     setPhase("cards");
-  }, []);
+  }, [dailySeed]);
 
   const handleSendQuestion = useCallback(
     async (message: string) => {
