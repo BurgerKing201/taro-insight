@@ -119,8 +119,9 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-6 text-center text-gray-600 text-sm">
-        Astral Insight &copy; {new Date().getFullYear()}
+      <footer className="relative z-10 py-6 text-center text-gray-600 text-sm flex items-center justify-center gap-4">
+        <span>Astral Insight &copy; {new Date().getFullYear()}</span>
+        <a href="/privacy" className="hover:text-gray-400 transition-colors">Политика конфиденциальности</a>
       </footer>
     </div>
   );
