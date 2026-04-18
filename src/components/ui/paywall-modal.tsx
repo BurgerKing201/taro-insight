@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Lock, Sparkles, Check, Star } from "lucide-react";
-import { subscribe } from "@/lib/usage";
+import { X, Lock, Sparkles, Check, Star, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -39,20 +40,47 @@ const FEATURES = [
 ];
 
 export function PaywallModal({ isOpen, moduleName, onClose, onSubscribed }: PaywallModalProps) {
+  const router = useRouter();
   const [selected, setSelected] = useState<"monthly" | "annual">("annual");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubscribe = async () => {
+    setError("");
     setLoading(true);
-    // Simulated payment delay
-    await new Promise((r) => setTimeout(r, 1200));
-    await subscribe(selected);
-    setLoading(false);
-    setSuccess(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setSuccess(false);
-    onSubscribed();
+
+    // Check if user is logged in
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      // Redirect to login first
+      onClose();
+      router.push(`/auth/login?redirect=/`);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: selected }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.url) {
+        setError(data.error || "Не удалось создать платёж. Попробуйте позже.");
+        setLoading(false);
+        return;
+      }
+
+      // Redirect to YooKassa payment page
+      window.location.href = data.url;
+    } catch {
+      setError("Ошибка соединения. Проверьте интернет и попробуйте снова.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,29 +113,6 @@ export function PaywallModal({ isOpen, moduleName, onClose, onSubscribed }: Payw
               >
                 <X className="w-4 h-4" />
               </button>
-
-              {/* Success state */}
-              <AnimatePresence>
-                {success && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 rounded-3xl bg-[#0d0d18] flex flex-col items-center justify-center z-10"
-                  >
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="w-20 h-20 rounded-full bg-purple-600/30 border-2 border-purple-400 flex items-center justify-center mb-4"
-                    >
-                      <Check className="w-10 h-10 text-purple-300" />
-                    </motion.div>
-                    <p className="text-white text-xl font-bold">Подписка активирована!</p>
-                    <p className="text-gray-400 text-sm mt-2">Добро пожаловать в Astral Insight Premium</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
               {/* Icon */}
               <div className="flex justify-center mb-4">
@@ -162,6 +167,11 @@ export function PaywallModal({ isOpen, moduleName, onClose, onSubscribed }: Payw
                 ))}
               </div>
 
+              {/* Error */}
+              {error && (
+                <p className="text-red-400 text-xs text-center mb-3 px-2">{error}</p>
+              )}
+
               {/* CTA */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -173,20 +183,29 @@ export function PaywallModal({ isOpen, moduleName, onClose, onSubscribed }: Payw
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Обработка...
+                    Переход к оплате...
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    Оформить подписку
+                    Оплатить через ЮKassa
                   </>
                 )}
               </motion.button>
 
+              {/* Login hint */}
+              <button
+                onClick={() => { onClose(); router.push("/auth/login"); }}
+                className="w-full text-center text-gray-600 text-xs mt-3 hover:text-gray-400 transition-colors cursor-pointer py-1 flex items-center justify-center gap-1"
+              >
+                <LogIn className="w-3 h-3" />
+                Войти в аккаунт
+              </button>
+
               {/* Dismiss */}
               <button
                 onClick={onClose}
-                className="w-full text-center text-gray-500 text-sm mt-3 hover:text-gray-400 transition-colors cursor-pointer py-1"
+                className="w-full text-center text-gray-500 text-sm mt-1 hover:text-gray-400 transition-colors cursor-pointer py-1"
               >
                 Вернуться завтра →
               </button>

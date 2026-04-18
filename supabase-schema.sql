@@ -28,10 +28,20 @@ create table public.readings (
   created_at timestamptz default now()
 );
 
+-- Payments table (YooKassa)
+create table public.payments (
+  id text primary key,                                    -- YooKassa payment ID
+  user_id uuid references auth.users(id) on delete cascade not null,
+  plan text not null,                                     -- 'monthly' | 'annual'
+  status text default 'pending',                          -- 'pending' | 'succeeded' | 'canceled'
+  created_at timestamptz default now()
+);
+
 -- RLS policies
 alter table public.profiles enable row level security;
 alter table public.module_usage enable row level security;
 alter table public.readings enable row level security;
+alter table public.payments enable row level security;
 
 -- Profiles: user can only read/update their own
 create policy "Own profile" on public.profiles
@@ -44,6 +54,10 @@ create policy "Own usage" on public.module_usage
 -- Readings: user can only read/insert their own
 create policy "Own readings" on public.readings
   for all using (auth.uid() = user_id);
+
+-- Payments: user can read their own; service role handles inserts/updates
+create policy "Own payments" on public.payments
+  for select using (auth.uid() = user_id);
 
 -- Auto-create profile on signup
 create or replace function public.handle_new_user()

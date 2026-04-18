@@ -8,7 +8,7 @@ import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { PaywallModal } from "@/components/ui/paywall-modal";
 import { AuthButton } from "@/components/ui/auth-button";
 import { tarotCards, TarotCard } from "@/data/tarot-cards";
-import { canUseModule, markModuleUsed } from "@/lib/usage";
+import { canUseModule, markModuleUsed, saveReading } from "@/lib/usage";
 
 type Phase = "question" | "cards" | "reading";
 type SpreadType = "single" | "triple";
@@ -115,17 +115,17 @@ export default function SpreadPage() {
   }, []);
 
   const handleSendQuestion = useCallback(
-    (message: string) => {
+    async (message: string) => {
       const cleanMessage = message
         .replace(/^\[(Search|Think|Canvas): /, "")
         .replace(/\]$/, "");
       if (!cleanMessage.trim()) return;
-      if (!canUseModule("spread")) {
+      if (!(await canUseModule("spread"))) {
         setPendingQuestion(cleanMessage);
         setShowPaywall(true);
         return;
       }
-      markModuleUsed("spread");
+      await markModuleUsed("spread");
       doStartSpread(cleanMessage);
     },
     [doStartSpread]
@@ -153,10 +153,16 @@ export default function SpreadPage() {
               body: JSON.stringify({ question, card }),
             });
             const data = await res.json();
-            setReading(
-              data.reading ||
-                "Не удалось получить толкование. Пожалуйста, убедитесь что API ключ настроен в .env.local"
-            );
+            const readingText = data.reading ||
+              "Не удалось получить толкование. Пожалуйста, убедитесь что API ключ настроен в .env.local";
+            setReading(readingText);
+            // Сохраняем расклад в историю
+            saveReading({
+              module: "spread",
+              title: `${card.name} — ${question.slice(0, 60)}`,
+              input: { question, card: card.name, spreadType: "single" },
+              result: readingText,
+            });
           } catch {
             setReading("Произошла ошибка при получении толкования. Попробуйте позже.");
           } finally {
@@ -187,15 +193,17 @@ export default function SpreadPage() {
               body: JSON.stringify({ question, cards: newCards }),
             });
             const data = await res.json();
-            if (data.readings && data.readings.length === 3) {
-              setReadings(data.readings);
-            } else {
-              setReadings([
-                "Не удалось получить толкование.",
-                "Не удалось получить толкование.",
-                "Не удалось получить толкование.",
-              ]);
-            }
+            const tripleReadings: string[] = data.readings?.length === 3
+              ? data.readings
+              : ["Не удалось получить толкование.", "Не удалось получить толкование.", "Не удалось получить толкование."];
+            setReadings(tripleReadings);
+            // Сохраняем расклад в историю
+            saveReading({
+              module: "spread",
+              title: `Три карты — ${question.slice(0, 50)}`,
+              input: { question, cards: newCards.map(c => c.name), spreadType: "triple" },
+              result: tripleReadings.map((r, i) => `${["Прошлое", "Настоящее", "Будущее"][i]}: ${r}`).join("\n\n"),
+            });
           } catch {
             setReadings([
               "Произошла ошибка при получении толкования.",
