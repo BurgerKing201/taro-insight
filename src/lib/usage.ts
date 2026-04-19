@@ -9,6 +9,20 @@ function todayStr(): string {
 
 // ─── Subscription ─────────────────────────────────────────────────────────────
 
+async function isSubscribedForUser(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("subscribed, subscribed_until")
+    .eq("id", userId)
+    .single();
+  if (!data) return false;
+  if (data.subscribed_until && new Date(data.subscribed_until) < new Date()) return false;
+  return data.subscribed === true;
+}
+
 export async function isSubscribed(): Promise<boolean> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -16,14 +30,7 @@ export async function isSubscribed(): Promise<boolean> {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("astral_subscribed") === "true";
   }
-  const { data } = await supabase
-    .from("profiles")
-    .select("subscribed, subscribed_until")
-    .eq("id", user.id)
-    .single();
-  if (!data) return false;
-  if (data.subscribed_until && new Date(data.subscribed_until) < new Date()) return false;
-  return data.subscribed === true;
+  return isSubscribedForUser(supabase, user.id);
 }
 
 export async function subscribe(plan: "monthly" | "annual"): Promise<void> {
@@ -52,21 +59,24 @@ export async function canUseModule(module: string): Promise<boolean> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (await isSubscribed()) return true;
-
   if (user) {
-    const { data } = await supabase
-      .from("module_usage")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("module", module)
-      .eq("used_at", todayStr())
-      .maybeSingle();
-    return !data;
+    const [subscribed, { data: usage }] = await Promise.all([
+      isSubscribedForUser(supabase, user.id),
+      supabase
+        .from("module_usage")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("module", module)
+        .eq("used_at", todayStr())
+        .maybeSingle(),
+    ]);
+    if (subscribed) return true;
+    return !usage;
   }
 
   // Fallback for guests
   if (typeof window === "undefined") return true;
+  if (localStorage.getItem("astral_subscribed") === "true") return true;
   return !localStorage.getItem(`${PREFIX}${module}_${todayStr()}`);
 }
 

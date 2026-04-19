@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, RotateCcw, Sparkles } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
 import { AuthButton } from "@/components/ui/auth-button";
-import { canUseModule, markModuleUsed } from "@/lib/usage";
+import { canUseModule, markModuleUsed, saveReading } from "@/lib/usage";
+import { StarField } from "@/components/ui/star-field";
 
 // ─── Zodiac data ──────────────────────────────────────────────────────────────
 
@@ -35,28 +36,6 @@ const ELEMENT_COLORS: Record<string, string> = {
   Воздух: "text-sky-300 bg-sky-500/10 border-sky-500/20",
   Вода:   "text-blue-300 bg-blue-500/10 border-blue-500/20",
 };
-
-// ─── Star field ───────────────────────────────────────────────────────────────
-
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: 0.2 + Math.random() * 0.5,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
@@ -96,10 +75,16 @@ export default function HoroscopePage() {
         }),
       });
       const data = await res.json();
-      setHoroscope(
+      const horoscopeText =
         data.horoscope ||
-        "Не удалось получить гороскоп. Убедитесь, что API ключ настроен в .env.local"
-      );
+        "Не удалось получить гороскоп. Убедитесь, что API ключ настроен в .env.local";
+      setHoroscope(horoscopeText);
+      await saveReading({
+        module: "horoscope",
+        title: `Гороскоп ${sign.nameRu} · ${today}`,
+        input: { sign: sign.id, signRu: sign.nameRu, date: today },
+        result: horoscopeText,
+      });
     } catch {
       setError("Произошла ошибка при получении гороскопа. Попробуйте позже.");
     } finally {

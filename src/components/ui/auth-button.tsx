@@ -24,7 +24,7 @@ export function AuthButton() {
     });
   }, []);
 
-  if (loading) return null;
+  if (loading) return <div className="w-16 h-8 rounded-xl bg-white/5 animate-pulse" />;
 
   if (name) {
     return (

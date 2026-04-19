@@ -9,6 +9,7 @@ import { PaywallModal } from "@/components/ui/paywall-modal";
 import { AuthButton } from "@/components/ui/auth-button";
 import { tarotCards, TarotCard } from "@/data/tarot-cards";
 import { canUseModule, markModuleUsed, saveReading } from "@/lib/usage";
+import { StarField } from "@/components/ui/star-field";
 
 type Phase = "question" | "cards" | "reading";
 type SpreadType = "single" | "triple";
@@ -21,34 +22,22 @@ function useCardSizes() {
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    let timer: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(timer);
+      timer = setTimeout(check, 150);
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
   return isMobile
     ? { w: 72, h: 112, ml: 36, step: 20, containerH: 220, innerH: 185, maxW: 500 }
     : { w: 117, h: 182, ml: 59, step: 36, containerH: 364, innerH: 312, maxW: 910 };
 }
 
-// ─── Star field background ──────────────────────────────────────────────────
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: 0.2 + Math.random() * 0.5,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 // ─── Card visuals ────────────────────────────────────────────────────────────
 function CardBack() {

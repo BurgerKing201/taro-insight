@@ -1,36 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Sparkles, Moon, Star, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuthButton } from "@/components/ui/auth-button";
+import { StarField } from "@/components/ui/star-field";
 
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 60 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: 0.2 + Math.random() * 0.5,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+const ROUTES = ["/spread", "/numerology", "/compatibility", "/horoscope"] as const;
 
 export default function Home() {
   const router = useRouter();
 
+  // Prefetch all module routes as soon as the homepage loads so compilation
+  // starts in the background — no cold-start delay when the user clicks.
+  useEffect(() => {
+    ROUTES.forEach((r) => router.prefetch(r));
+  }, [router]);
+
   return (
     <div className="relative min-h-screen flex flex-col bg-[#0a0a0f] overflow-hidden">
-      <StarField />
+      <StarField count={60} />
 
       <div className="fixed top-[-200px] left-[-200px] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" />
@@ -66,19 +57,23 @@ export default function Home() {
         </motion.p>
 
         {/* CTA Button */}
-        <motion.button
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          onClick={() => router.push("/spread")}
-          className="mb-12 md:mb-16 w-full sm:w-auto group relative px-7 py-4 md:px-10 md:py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold text-base md:text-xl tracking-wide transition-all duration-300 hover:from-purple-500 hover:to-purple-400 hover:scale-105 glow-purple cursor-pointer"
+          className="mb-12 md:mb-16"
         >
-          <span className="flex items-center justify-center gap-2 md:gap-3">
-            <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
-            Сделать дневной расклад
-            <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
-          </span>
-        </motion.button>
+          <Link
+            href="/spread"
+            className="block w-full sm:w-auto group relative px-7 py-4 md:px-10 md:py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold text-base md:text-xl tracking-wide transition-all duration-300 hover:from-purple-500 hover:to-purple-400 hover:scale-105 glow-purple"
+          >
+            <span className="flex items-center justify-center gap-2 md:gap-3">
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
+              Сделать дневной расклад
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
+            </span>
+          </Link>
+        </motion.div>
 
         {/* Services */}
         <motion.div
@@ -140,14 +135,12 @@ function ServiceCard({
   delay: number;
   href?: string;
 }) {
-  const router = useRouter();
-  return (
+  const inner = (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.6 + delay }}
-      onClick={() => href && router.push(href)}
-      className={`group p-4 md:p-8 rounded-2xl border border-purple-500/10 bg-white/[0.02] backdrop-blur-sm hover:border-purple-500/30 hover:bg-white/[0.04] transition-all duration-300 ${href ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : ""}`}
+      className={`group p-4 md:p-8 rounded-2xl border border-purple-500/10 bg-white/[0.02] backdrop-blur-sm hover:border-purple-500/30 hover:bg-white/[0.04] transition-all duration-300 ${href ? "hover:scale-[1.02] active:scale-[0.98]" : ""}`}
     >
       <div className="text-purple-400 mb-3 group-hover:text-purple-300 transition-colors [&>svg]:w-7 [&>svg]:h-7 md:[&>svg]:w-10 md:[&>svg]:h-10">
         {icon}
@@ -161,4 +154,7 @@ function ServiceCard({
       )}
     </motion.div>
   );
+
+  if (!href) return inner;
+  return <Link href={href} className="block">{inner}</Link>;
 }

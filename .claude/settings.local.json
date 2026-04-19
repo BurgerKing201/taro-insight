@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge:*)",
+      "Bash(git -C /c/Users/Chen/Desktop/astral-insight-main/.claude/worktrees/stupefied-taussig reset --hard master)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d['version']\\)\")"
+    ]
+  }
+}

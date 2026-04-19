@@ -4,22 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check, Sparkles, Crown } from "lucide-react";
-
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <div key={i} className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
-            opacity: 0.2 + Math.random() * 0.4,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-          }} />
-      ))}
-    </div>
-  );
-}
+import { StarField } from "@/components/ui/star-field";
 
 const PLAN_LABELS: Record<string, string> = {
   monthly: "Месячная подписка",

@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Heart, RotateCcw, Sparkles } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
 import { AuthButton } from "@/components/ui/auth-button";
-import { canUseModule, markModuleUsed } from "@/lib/usage";
+import { canUseModule, markModuleUsed, saveReading } from "@/lib/usage";
+import { StarField } from "@/components/ui/star-field";
 
 // ─── Numerology helpers ──────────────────────────────────────────────────────
 
@@ -171,28 +172,6 @@ function PersonCard({
   );
 }
 
-// ─── Star field ───────────────────────────────────────────────────────────────
-
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: 0.2 + Math.random() * 0.5,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 type Phase = "input" | "result";
@@ -240,10 +219,16 @@ export default function CompatibilityPage() {
         }),
       });
       const data = await res.json();
-      setInterpretation(
+      const interpretationText =
         data.interpretation ||
-        "Не удалось получить интерпретацию. Убедитесь, что API ключ настроен в .env.local"
-      );
+        "Не удалось получить интерпретацию. Убедитесь, что API ключ настроен в .env.local";
+      setInterpretation(interpretationText);
+      await saveReading({
+        module: "compatibility",
+        title: `Совместимость: ${p1.name} & ${p2.name}`,
+        input: { person1: p1, person2: p2, score: total },
+        result: interpretationText,
+      });
     } catch {
       setError("Произошла ошибка при получении интерпретации. Попробуйте позже.");
     } finally {
@@ -393,9 +378,10 @@ export default function CompatibilityPage() {
 
                 <motion.button
                   type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold text-base md:text-lg tracking-wide transition-all duration-300 hover:from-purple-500 hover:to-purple-400 glow-purple cursor-pointer flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                  className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold text-base md:text-lg tracking-wide transition-all duration-300 hover:from-purple-500 hover:to-purple-400 glow-purple cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Heart className="w-5 h-5" />
                   Узнать совместимость

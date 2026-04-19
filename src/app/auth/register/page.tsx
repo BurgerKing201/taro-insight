@@ -5,20 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Mail, Lock, Eye, EyeOff, User, ArrowLeft, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <div key={i} className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
-            opacity: 0.2 + Math.random() * 0.5,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s` }} />
-      ))}
-    </div>
-  );
-}
+import { StarField } from "@/components/ui/star-field";
 
 export default function RegisterPage() {
   const router = useRouter();

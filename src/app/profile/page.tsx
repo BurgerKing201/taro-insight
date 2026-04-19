@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isSubscribed } from "@/lib/usage";
+import { StarField } from "@/components/ui/star-field";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -54,24 +55,6 @@ function formatDateShort(iso: string) {
   return new Date(iso).toLocaleDateString("ru-RU", {
     day: "numeric", month: "short",
   });
-}
-
-// ─── Star field ───────────────────────────────────────────────────────────────
-
-function StarField() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 30 }).map((_, i) => (
-        <div key={i} className="absolute w-[2px] h-[2px] bg-white rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
-            opacity: 0.15 + Math.random() * 0.4,
-            animation: `twinkle ${2 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 3}s`,
-          }} />
-      ))}
-    </div>
-  );
 }
 
 // ─── Reading card ─────────────────────────────────────────────────────────────
