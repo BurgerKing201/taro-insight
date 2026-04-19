@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check, Sparkles, Crown } from "lucide-react";
@@ -11,7 +11,7 @@ const PLAN_LABELS: Record<string, string> = {
   annual:  "Годовая подписка",
 };
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter();
   const params = useSearchParams();
   const plan = params.get("plan") ?? "monthly";
@@ -87,5 +87,13 @@ export default function PaymentSuccessPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
