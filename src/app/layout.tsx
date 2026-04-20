@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Taro Insight — Таро, Нумерология, Астрология",
-  description: "Персональные гадания на Таро с помощью AI. Дневной расклад, нумерология, астрология и гороскопы.",
+  description: "Персональные гадания на Таро. Дневной расклад, нумерология, астрология и гороскопы.",
 };
 
 export default function RootLayout({
