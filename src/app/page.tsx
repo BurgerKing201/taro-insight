@@ -106,7 +106,7 @@ export default function Home() {
           <ServiceCard
             icon={<Sun className="w-8 h-8" />}
             title="Гороскоп"
-            description="Персональный прогноз на сегодня для вашего знака зодиака от звёздного ИИ."
+            description="Персональный прогноз на сегодня для вашего знака зодиака."
             delay={0.3}
             href="/horoscope"
           />
