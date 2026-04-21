@@ -117,6 +117,7 @@ export default function Home() {
       <footer className="relative z-10 py-6 text-center text-gray-600 text-sm flex items-center justify-center gap-4">
         <span>Taro Insight &copy; {new Date().getFullYear()}</span>
         <a href="/privacy" className="hover:text-gray-400 transition-colors">Политика конфиденциальности</a>
+        <a href="/oferta" className="hover:text-gray-400 transition-colors">Оферта</a>
       </footer>
     </div>
   );
