@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+const MODEL = "nousresearch/hermes-3-llama-3.1-405b:free";
 
 async function callAI(system: string, user: string, maxTokens: number, apiKey: string) {
   const response = await fetch(OPENROUTER_URL, {
