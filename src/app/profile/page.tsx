@@ -337,6 +337,51 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
+                {/* Subscription */}
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-purple-500/15">
+                  <p className="text-xs text-gray-500 mb-3 uppercase tracking-wider flex items-center gap-1.5">
+                    <Crown className="w-3.5 h-3.5" />Подписка
+                  </p>
+                  {subscribed ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
+                          <span className="text-sm text-white font-medium">Premium</span>
+                        </div>
+                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                          Активна
+                        </span>
+                      </div>
+                      {profile?.subscribed_until && (
+                        <div className="flex items-center justify-between text-xs border-t border-purple-500/10 pt-3">
+                          <span className="text-gray-500">Действует до</span>
+                          <span className="text-gray-300">{formatDate(profile.subscribed_until)}</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-gray-600" />
+                          <span className="text-sm text-gray-400">Бесплатный план</span>
+                        </div>
+                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-gray-500/10 text-gray-500 border border-gray-500/20">
+                          Free
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => router.push("/")}
+                        className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-purple-600/15 border border-purple-500/25 text-purple-300 hover:bg-purple-600/25 transition-all cursor-pointer text-sm"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Перейти на Premium
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Email */}
                 <div className="p-4 rounded-2xl bg-white/[0.02] border border-purple-500/15">
                   <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Email</p>
