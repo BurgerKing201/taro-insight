@@ -1,5 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+
+async function callAI(system: string, user: string, maxTokens: number, apiKey: string) {
+  const response = await fetch(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+      "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "https://taroinsight.space",
+      "X-Title": "Taro Insight",
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: maxTokens,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw { status: response.status, details: errorData };
+  }
+
+  const data = await response.json();
+  return (data.choices?.[0]?.message?.content as string) || "";
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { question, card, cards } = body;
@@ -10,10 +41,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing question or card(s)" }, { status: 400 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "API key not configured. Set ANTHROPIC_API_KEY in .env.local" },
+      { error: "API key not configured. Set OPENROUTER_API_KEY in environment variables." },
       { status: 500 }
     );
   }
@@ -35,34 +66,14 @@ export async function POST(req: NextRequest) {
 Ключевые слова: ${card.keywords.join(", ")}`;
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1024,
-          system: systemPrompt,
-          messages: [{ role: "user", content: userMessage }],
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return NextResponse.json(
-          { error: "AI API error", details: errorData },
-          { status: response.status }
-        );
-      }
-
-      const data = await response.json();
-      const text = data.content?.[0]?.text || "Не удалось получить ответ.";
-      return NextResponse.json({ reading: text });
-    } catch (error) {
+      const text = await callAI(systemPrompt, userMessage, 1024, apiKey);
+      return NextResponse.json({ reading: text || "Не удалось получить ответ." });
+    } catch (error: unknown) {
       console.error("AI API error:", error);
+      const err = error as { status?: number; details?: unknown };
+      if (err.status) {
+        return NextResponse.json({ error: "AI API error", details: err.details }, { status: err.status });
+      }
       return NextResponse.json({ error: "Failed to generate reading" }, { status: 500 });
     }
   }
@@ -100,31 +111,7 @@ ${cards
   .join("\n\n")}`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 2048,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userMessage }],
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return NextResponse.json(
-        { error: "AI API error", details: errorData },
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
-    const text: string = data.content?.[0]?.text || "";
+    const text = await callAI(systemPrompt, userMessage, 2048, apiKey);
 
     // Parse sections between <card1>…</card1> etc.
     const readings: string[] = [];
@@ -134,8 +121,12 @@ ${cards
     }
 
     return NextResponse.json({ readings });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("AI API error:", error);
+    const err = error as { status?: number; details?: unknown };
+    if (err.status) {
+      return NextResponse.json({ error: "AI API error", details: err.details }, { status: err.status });
+    }
     return NextResponse.json({ error: "Failed to generate reading" }, { status: 500 });
   }
 }
