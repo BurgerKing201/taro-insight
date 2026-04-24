@@ -105,8 +105,8 @@ export default function PrivacyPage() {
             <h2 className="text-white font-semibold text-base mb-3">9. Контакты</h2>
             <p className="text-gray-400">
               По вопросам, связанным с конфиденциальностью данных, пишите на:{" "}
-              <a href="mailto:support@taro-insight.ru" className="text-purple-400 hover:text-purple-300 transition-colors">
-                support@taro-insight.ru
+              <a href="mailto:support@taroinsight.space" className="text-purple-400 hover:text-purple-300 transition-colors">
+                support@taroinsight.space
               </a>
             </p>
           </section>
