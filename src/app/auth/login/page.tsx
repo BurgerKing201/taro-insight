@@ -29,8 +29,7 @@ export default function LoginPage() {
         : error.message);
       setLoading(false);
     } else {
-      router.push("/profile");
-      router.refresh();
+      window.location.href = "/profile";
     }
   };
 
