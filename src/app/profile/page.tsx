@@ -175,21 +175,26 @@ export default function ProfilePage() {
 
   useEffect(() => {
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/auth/login"); return; }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { router.push("/auth/login"); return; }
 
-      setEmail(user.email ?? "");
+        setEmail(user.email ?? "");
 
-      const [profileRes, readingsRes, sub] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", user.id).single(),
-        supabase.from("readings").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(30),
-        isSubscribed(),
-      ]);
+        const [profileRes, readingsRes, sub] = await Promise.all([
+          supabase.from("profiles").select("*").eq("id", user.id).single(),
+          supabase.from("readings").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(30),
+          isSubscribed(),
+        ]);
 
-      setProfile(profileRes.data ?? null);
-      setReadings(readingsRes.data ?? []);
-      setSubscribed(sub);
-      setLoading(false);
+        setProfile(profileRes.data ?? null);
+        setReadings(readingsRes.data ?? []);
+        setSubscribed(sub);
+      } catch (e) {
+        console.error("Profile load error:", e);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
