@@ -118,6 +118,7 @@ export default function Home() {
         <span>Taro Insight &copy; {new Date().getFullYear()}</span>
         <a href="/privacy" className="hover:text-gray-400 transition-colors">Политика конфиденциальности</a>
         <a href="/oferta" className="hover:text-gray-400 transition-colors">Оферта</a>
+        <a href="/cookie" className="hover:text-gray-400 transition-colors">Cookie</a>
       </footer>
     </div>
   );
