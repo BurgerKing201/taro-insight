@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, RotateCcw, Hash } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
@@ -148,6 +149,19 @@ export default function NumerologyPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPaywall, setShowPaywall] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase.from("profiles").select("full_name, birth_date").eq("id", user.id).single();
+        if (data?.full_name) setName(data.full_name);
+        if (data?.birth_date) setBirthDate(data.birth_date);
+      } catch {}
+    })();
+  }, []);
 
   const doCalculate = async () => {
     const lp = calculateLifePath(birthDate);

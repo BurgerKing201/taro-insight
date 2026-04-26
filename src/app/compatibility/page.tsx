@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Heart, RotateCcw, Sparkles } from "lucide-react";
 import { PaywallModal } from "@/components/ui/paywall-modal";
@@ -193,6 +194,23 @@ export default function CompatibilityPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPaywall, setShowPaywall] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase.from("profiles").select("full_name, birth_date").eq("id", user.id).single();
+        if (data?.full_name || data?.birth_date) {
+          setP1(prev => ({
+            name: data.full_name || prev.name,
+            birthDate: data.birth_date || prev.birthDate,
+          }));
+        }
+      } catch {}
+    })();
+  }, []);
 
   const doCalculate = async () => {
     const a = { lp: calculateLifePath(p1.birthDate), dn: calcDestiny(p1.name), sn: calcSoul(p1.name) };
