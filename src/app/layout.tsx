@@ -13,8 +13,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Taro Insight — Таро, Нумерология, Астрология",
-  description: "Персональные гадания на Таро. Дневной расклад, нумерология, астрология и гороскопы.",
+  title: {
+    default: "Taro Insight — Таро, Нумерология, Астрология онлайн",
+    template: "%s | Taro Insight",
+  },
+  description: "Бесплатные персональные гадания на Таро онлайн. Дневной расклад карт, нумерология по дате рождения, совместимость и гороскоп от ИИ.",
+  keywords: ["таро онлайн", "гадание на картах таро", "нумерология онлайн", "гороскоп", "расклад таро бесплатно", "астрология"],
+  authors: [{ name: "Taro Insight" }],
+  metadataBase: new URL("https://taroinsight.space"),
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    url: "https://taroinsight.space",
+    siteName: "Taro Insight",
+    title: "Taro Insight — Таро, Нумерология, Астрология онлайн",
+    description: "Бесплатные персональные гадания на Таро онлайн. Дневной расклад, нумерология, совместимость и гороскоп от ИИ.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Taro Insight" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Taro Insight — Таро, Нумерология, Астрология онлайн",
+    description: "Бесплатные персональные гадания на Таро онлайн.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export default function RootLayout({
