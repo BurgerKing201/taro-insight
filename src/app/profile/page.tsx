@@ -265,7 +265,7 @@ export default function ProfilePage() {
             </div>
           ) : (
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/payment")}
               className="mt-3 flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-purple-500/20 text-gray-400 hover:text-purple-300 hover:border-purple-500/40 transition-all cursor-pointer text-sm"
             >
               <Sparkles className="w-4 h-4" />
@@ -377,7 +377,7 @@ export default function ProfilePage() {
                         </span>
                       </div>
                       <button
-                        onClick={() => router.push("/")}
+                        onClick={() => router.push("/payment")}
                         className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-purple-600/15 border border-purple-500/25 text-purple-300 hover:bg-purple-600/25 transition-all cursor-pointer text-sm"
                       >
                         <Sparkles className="w-4 h-4" />
