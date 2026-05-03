@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Гороскоп на сегодня — персональный прогноз от ИИ",
-  description: "Персональный гороскоп на сегодня для вашего знака зодиака. Точный прогноз от астрологического ИИ — бесплатно и без регистрации.",
+  title: "Гороскоп",
+  description: "Персональный астрологический прогноз на сегодня для вашего знака зодиака с развёрнутым анализом от ИИ.",
   openGraph: {
-    title: "Гороскоп на сегодня — персональный прогноз от ИИ",
-    description: "Персональный гороскоп на сегодня для вашего знака зодиака.",
-    url: "https://taroinsight.space/horoscope",
+    title: "Гороскоп | Taro Insight",
+    description: "Персональный астрологический прогноз на сегодня для вашего знака зодиака.",
   },
 };
 
 export default function HoroscopeLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <>{children}</>;
 }

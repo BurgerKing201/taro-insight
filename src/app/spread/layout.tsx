@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Расклад Таро онлайн — дневное гадание на картах",
-  description: "Бесплатный расклад карт Таро онлайн. Выберите карту и получите персональное толкование от ИИ. Однокарточный и трёхкарточный расклад.",
+  title: "Расклад Таро",
+  description: "Онлайн гадание на картах Таро с персональным толкованием от ИИ. Расклад на 1 или 3 карты — прошлое, настоящее и будущее.",
   openGraph: {
-    title: "Расклад Таро онлайн — дневное гадание на картах",
-    description: "Бесплатный расклад карт Таро онлайн. Персональное толкование от ИИ.",
-    url: "https://taroinsight.space/spread",
+    title: "Расклад Таро | Taro Insight",
+    description: "Онлайн гадание на картах Таро с персональным толкованием от ИИ.",
   },
 };
 
 export default function SpreadLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <>{children}</>;
 }

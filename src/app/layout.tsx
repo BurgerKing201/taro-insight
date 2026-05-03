@@ -12,34 +12,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin", "cyrillic"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taro-insight.ru";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Taro Insight — Таро, Нумерология, Астрология онлайн",
+    default: "Taro Insight — Таро, Нумерология, Астрология",
     template: "%s | Taro Insight",
   },
-  description: "Бесплатные персональные гадания на Таро онлайн. Дневной расклад карт, нумерология по дате рождения, совместимость и гороскоп от ИИ.",
-  keywords: ["таро онлайн", "гадание на картах таро", "нумерология онлайн", "гороскоп", "расклад таро бесплатно", "астрология"],
+  description: "Персональные гадания на Таро, нумерология и гороскопы с искусственным интеллектом. Дневной расклад, совместимость и астрологический прогноз.",
+  keywords: ["таро", "гадание", "нумерология", "гороскоп", "астрология", "совместимость", "расклад таро онлайн"],
   authors: [{ name: "Taro Insight" }],
-  metadataBase: new URL("https://taroinsight.space"),
-  openGraph: {
-    type: "website",
-    locale: "ru_RU",
-    url: "https://taroinsight.space",
-    siteName: "Taro Insight",
-    title: "Taro Insight — Таро, Нумерология, Астрология онлайн",
-    description: "Бесплатные персональные гадания на Таро онлайн. Дневной расклад, нумерология, совместимость и гороскоп от ИИ.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Taro Insight" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Taro Insight — Таро, Нумерология, Астрология онлайн",
-    description: "Бесплатные персональные гадания на Таро онлайн.",
-    images: ["/og-image.png"],
-  },
+  creator: "Taro Insight",
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
+  },
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    url: SITE_URL,
+    siteName: "Taro Insight",
+    title: "Taro Insight — Таро, Нумерология, Астрология",
+    description: "Персональные гадания на Таро, нумерология и гороскопы с искусственным интеллектом.",
+    images: [{ url: "/opengraph-image.png", width: 1640, height: 2360, alt: "Taro Insight" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Taro Insight — Таро, Нумерология, Астрология",
+    description: "Персональные гадания на Таро, нумерология и гороскопы с искусственным интеллектом.",
+    images: ["/opengraph-image.png"],
   },
 };
 

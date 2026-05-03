@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Sparkles, Moon, Star, Sun } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { AuthButton } from "@/components/ui/auth-button";
 import { StarField } from "@/components/ui/star-field";
 
@@ -29,7 +30,7 @@ export default function Home() {
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between px-4 md:px-8 py-5">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-400" />
+          <Image src="/logo.png" alt="Taro Insight" width={28} height={28} className="rounded-full" />
           <span className="text-base font-semibold tracking-wide text-white">Taro Insight</span>
         </div>
         <AuthButton />
@@ -106,7 +107,7 @@ export default function Home() {
           <ServiceCard
             icon={<Sun className="w-8 h-8" />}
             title="Гороскоп"
-            description="Персональный прогноз на сегодня для вашего знака зодиака от звёздного ИИ."
+            description="Персональный прогноз на сегодня для вашего знака зодиака."
             delay={0.3}
             href="/horoscope"
           />
