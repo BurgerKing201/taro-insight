@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = "openai/gpt-oss-20b:free";
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { name, birthDate, lifePathNumber, destinyNumber, soulNumber } = body;
@@ -8,10 +11,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing name or birthDate" }, { status: 400 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "API key not configured. Set ANTHROPIC_API_KEY in .env.local" },
+      { error: "API key not configured. Set OPENROUTER_API_KEY in .env.local" },
       { status: 500 }
     );
   }
@@ -33,31 +36,31 @@ export async function POST(req: NextRequest) {
 Число души: ${soulNumber}`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch(OPENROUTER_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "https://taroinsight.space",
+        "X-Title": "Taro Insight",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: MODEL,
         max_tokens: 1024,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userMessage }],
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage },
+        ],
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      return NextResponse.json(
-        { error: "AI API error", details: errorData },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: "AI API error", details: errorData }, { status: response.status });
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || "Не удалось получить интерпретацию.";
+    const text = (data.choices?.[0]?.message?.content as string) || "Не удалось получить интерпретацию.";
     return NextResponse.json({ interpretation: text });
   } catch (error) {
     console.error("AI API error:", error);

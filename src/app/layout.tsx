@@ -12,9 +12,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin", "cyrillic"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taro-insight.ru";
+
 export const metadata: Metadata = {
-  title: "Taro Insight — Таро, Нумерология, Астрология",
-  description: "Персональные гадания на Таро. Дневной расклад, нумерология, астрология и гороскопы.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Taro Insight — Таро, Нумерология, Астрология",
+    template: "%s | Taro Insight",
+  },
+  description: "Персональные гадания на Таро, нумерология и гороскопы с искусственным интеллектом. Дневной расклад, совместимость и астрологический прогноз.",
+  keywords: ["таро", "гадание", "нумерология", "гороскоп", "астрология", "совместимость", "расклад таро онлайн"],
+  authors: [{ name: "Taro Insight" }],
+  creator: "Taro Insight",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    url: SITE_URL,
+    siteName: "Taro Insight",
+    title: "Taro Insight — Таро, Нумерология, Астрология",
+    description: "Персональные гадания на Таро, нумерология и гороскопы с искусственным интеллектом.",
+    images: [{ url: "/opengraph-image.png", width: 1640, height: 2360, alt: "Taro Insight" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Taro Insight — Таро, Нумерология, Астрология",
+    description: "Персональные гадания на Таро, нумерология и гороскопы с искусственным интеллектом.",
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({

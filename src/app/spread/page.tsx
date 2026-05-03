@@ -42,18 +42,14 @@ function useCardSizes() {
 // ─── Card visuals ────────────────────────────────────────────────────────────
 function CardBack() {
   return (
-    <div className="w-full h-full rounded-xl bg-gradient-to-br from-purple-100 via-white to-purple-200 border-2 border-purple-300 flex items-center justify-center p-2">
-      <div className="w-full h-full rounded-lg border border-purple-300 bg-gradient-to-br from-purple-50 via-white to-purple-100 flex items-center justify-center">
-        <div className="relative">
-          <div className="w-12 h-12 border-2 border-purple-400 rounded-full flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-purple-500" />
-          </div>
-          <div className="absolute -top-1 -left-1 w-3 h-3 text-purple-400">&#10022;</div>
-          <div className="absolute -top-1 -right-1 w-3 h-3 text-purple-400">&#10022;</div>
-          <div className="absolute -bottom-1 -left-1 w-3 h-3 text-purple-400">&#10022;</div>
-          <div className="absolute -bottom-1 -right-1 w-3 h-3 text-purple-400">&#10022;</div>
-        </div>
-      </div>
+    <div className="w-full h-full rounded-xl overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/card-back.png"
+        alt="Рубашка карты"
+        className="w-full h-full object-cover"
+        draggable={false}
+      />
     </div>
   );
 }
